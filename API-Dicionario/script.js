@@ -152,19 +152,14 @@ setEnabledStatus = (element, status) => {
             children[y].style.backgroundColor = "#3016c4";
         }
     } else {
+        let word = document.getElementsByTagName('h1')[0].innerHTML.split(" ")[document.getElementsByTagName('h1')[0].innerHTML.split(" ").length - 1]
+        let colors = verifyWords(word, getEnabledWord());
         for (let y = 0; y < children.length; y++) {
             setActiveStatus(children[y], false);
             // AQUI ACONTECE A VERIFICAÇÃO DA PALAVRA, APERFEIÇOAR
             // ADICIONAR REQUISIÇÃO PRA VERIFICAR SE A PALAVRA TESTADA TÁ NO DICIONÁRIO
             children[y].style.transition = `all ${1}s ${0.1 * (y + 1)}s`;
-            let word = document.getElementsByTagName('h1')[0].innerHTML.split(" ")[document.getElementsByTagName('h1')[0].innerHTML.split(" ").length - 1]
-            if (word.includes(children[y].innerHTML) && word.indexOf(children[y].innerHTML) == y) {
-                children[y].style.backgroundColor = "#00FF00";
-            } else if (word.includes(children[y].innerHTML) && word.indexOf(children[y].innerHTML) != y) {
-                children[y].style.backgroundColor = "#aaaa00";
-            } else {
-                children[y].style.backgroundColor = "#0e005a";
-            }
+            children[y].style.backgroundColor = colors.get(y);
             children[y].style.transform = "rotateY(180deg) scale(-1, 1)";
         }
     }
@@ -174,11 +169,14 @@ const verifyWords = (mainWord, testWord) => {
     let colors = new Map();
     let cloneWord = testWord;
     for (let i = 0; i < mainWord.length; i++) {
+        console.log(cloneWord)
         if (mainWord[i] == testWord[i]) {
             colors.set(i, '#00FF00');
-            cloneWord[i] = "_"
+            continue;
         }
+        colors.set(i, "#aaaa00")
     }
+    return colors;
 }
 
 const main = async() => {
