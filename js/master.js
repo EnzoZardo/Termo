@@ -18,7 +18,9 @@ const CLASSNAMES = {
     DisabledCell: "c0",
     EnabledCell: "c1",
     EmptyCell: "empty",
-    FullCell: "full"
+    FullCell: "full",
+    Warning: "warning",
+    FinalModal: "final-modal"
 };
 
 /*
@@ -34,8 +36,30 @@ const DIRECTIONS = {
 */
 const WORD = {
     Word: "",
-    Data: ""
+    Data: "",
+    Seed: ""
 };
+
+const WARNING = {
+    WarningElement: document.querySelector(`.${CLASSNAMES.Warning}`),
+    Alert: function(text) {
+        this.WarningElement.innerText = text;
+        this.WarningElement.style.opacity = "1";
+        let timer = setInterval(() => {
+            WARNING.WarningElement.style.opacity = "0"
+            clearInterval(timer);
+        }, 4000);
+    }
+};
+
+const MODAL = {
+    ModalElement: document.querySelector(`.${CLASSNAMES.FinalModal}`),
+    ShowModal: function(seed, word, meaning) {
+        this.ModalElement.querySelector('.seed').innerHTML += seed;
+        this.ModalElement.querySelector('.word').innerHTML += word;
+        this.ModalElement.querySelector('.meaning').innerHTML += meaning;
+    }
+}
 
 /*
  Cores utilizadas no site
@@ -106,7 +130,7 @@ const generateBoard = (width, height) => {
 }
 
 /*
- Pega a linha ativa (r1) e percorre suas células filhas
+ Pega a linha ativa e percorre suas células filhas
  Quando passar pela célula atualmente ativa, irá desati-
  var o status dela e ativar a célula seguinte.
  Obs.: Caso ocorra alguma exceção, ele irá verificar o 
@@ -175,10 +199,11 @@ document.addEventListener('keyup', async(event) => {
                 if (exists) {
                     moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.Root}`, CLASSNAMES.EnabledRow, setRowStatus, false);
                 } else {
-                    alert("Palavra não existente // Trocar isso por um alerta bonito");
+                    WARNING.Alert("Palavra não encontrada");
+                    // WARNING.CloseAlert();
                 }
             } else {
-                alert("Falta preencher ainda // Trocar isso por um alerta bonito");
+                WARNING.Alert("Ainda existem letras por preencher");
             }
             break;
         default:
@@ -235,6 +260,7 @@ setRowStatus = (element, status) => {
             children[y].style.backgroundColor = COLORS.Blue;
         }
     } else {
+        //Adicionar aqui verificação final e o ShowModal
         console.log(WORD.Word, getEnabledWord())
         let colors = verifyWords(WORD.Word, getEnabledWord());
         for (let y = 0; y < children.length; y++) {
@@ -305,8 +331,10 @@ const main = async() => {
     generateBoard(5, 6);
     let words = [];
     while (words.length == 0) {
-        words = (await getNearWords((await getRandomWord()).word.slice(0, 5))).filter((val) => { return val.length == 5 });
+        seed = await getRandomWord();
+        words = (await getNearWords((seed).word.slice(0, 5))).filter((val) => { return val.length == 5 });
     }
+    WORD.Seed = seed;
     WORD.Word = words[0].normalize('NFD').replace(/\p{Mn}/gu, "").toLocaleUpperCase();
     WORD.Data = await getWordData(WORD.Word);
     document.getElementsByTagName('h1')[0].innerHTML += " " + WORD.Word.toLocaleUpperCase();

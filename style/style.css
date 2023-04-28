@@ -11,17 +11,59 @@ body {
     justify-content: space-evenly;
 }
 
-.title {
+.title,
+.warning {
     color: whitesmoke;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: bold;
 }
 
-.termo .row-div {
+.termo .row-div,
+.warning,
+.final-modal {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+}
+
+.termo .row-div,
+.warning {
     justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.warning {
+    position: absolute;
+    top: calc(23% - 1.5rem);
+    left: calc(50% - 7rem);
+    opacity: 0;
+    transition: all 3s;
+    width: 14rem;
+    height: 3rem;
+    text-align: center;
+    background-color: #c51e08;
+    border-radius: 10px;
+}
+
+.final-modal {
+    flex-direction: column;
+    justify-content: baseline;
+    position: absolute;
+    width: 25rem;
+    height: 25rem;
+    top: calc(50% - 12.5rem);
+    left: calc(50% - 12.5rem);
+    background-color: whitesmoke;
+    border-radius: 10px;
+    box-shadow: 10px 10px 50px black;
+}
+
+.final-modal div {
+    margin: 1.5rem;
+}
+
+.final-modal div span {
+    font-weight: bold;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .cell-div {
