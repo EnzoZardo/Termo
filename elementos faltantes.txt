@@ -1,0 +1,4 @@
+Verificar se chegou na última linha, vulgo perdeu
+Verificar se venceu
+Ajustar alerts
+Criar funções para vencedor e perdedor

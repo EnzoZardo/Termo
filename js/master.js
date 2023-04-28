@@ -1,3 +1,6 @@
+/*
+ Teclas a serem utilizadas
+*/
 const KEYS = {
     Right: "ArrowRight",
     Left: "ArrowLeft",
@@ -5,6 +8,9 @@ const KEYS = {
     Enter: "Enter"
 };
 
+/*
+ Classes que serão utilizadas
+*/
 const CLASSNAMES = {
     Root: "termo",
     DisabledRow: "r0",
@@ -15,15 +21,31 @@ const CLASSNAMES = {
     FullCell: "full"
 };
 
+/*
+ Direções para a função de mover linhas e colunas
+*/
 const DIRECTIONS = {
     Forward: 1,
     Backward: -1
-}
+};
 
+/*
+ Representação da palavra principal
+*/
 const WORD = {
     Word: "",
     Data: ""
 };
+
+/*
+ Cores utilizadas no site
+*/
+const COLORS = {
+    Yellow: "#aaaa00",
+    Green: "#00aa00",
+    Blue: "#3016c4",
+    NeutralBlue: "#0e005a"
+}
 
 /*
  Função de requisição genérica
@@ -210,7 +232,7 @@ setRowStatus = (element, status) => {
             if (y == 0) {
                 setCellStatus(children[y], true);
             }
-            children[y].style.backgroundColor = "#3016c4";
+            children[y].style.backgroundColor = COLORS.Blue;
         }
     } else {
         console.log(WORD.Word, getEnabledWord())
@@ -245,12 +267,12 @@ const verifyWords = (mainWord, testWord) => {
     const colorMap = new Map();
     const mainChars = mainWord.split("");
     for (let i = 0; i < mainWord.length; i++) {
-        colorMap.set(i, "#3016c4");
+        colorMap.set(i, COLORS.Blue);
     }
     // Checa as letras que estão na posição correta
     for (let i = 0; i < mainChars.length; i++) {
         if (mainChars[i] === testWord[i]) {
-            colorMap.set(i, "#00aa00");
+            colorMap.set(i, COLORS.Green);
             mainChars[i] = null;
         }
     }
@@ -258,7 +280,7 @@ const verifyWords = (mainWord, testWord) => {
     for (let i = 0; i < mainChars.length; i++) {
         const testChar = testWord[i];
         if (testChar !== null && mainChars.includes(testChar)) {
-            colorMap.set(i, "#aaaa00");
+            colorMap.set(i, COLORS.Yellow);
             const index = mainChars.indexOf(testChar);
             mainChars[index] = null;
         }
