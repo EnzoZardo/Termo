@@ -105,6 +105,7 @@ document.addEventListener('keyup', async(event) => {
     if (event.key == "Enter") {
         if (isAllFull()) {
             console.log(getEnabledWord());
+            console.log((await getWordData(getEnabledWord())).word);
             let exists = await wordExists(getEnabledWord().toLocaleLowerCase());
             if (exists) {
                 moveEnabledRow(1);
@@ -142,7 +143,6 @@ const setActiveStatus = (element, status) => {
 }
 
 setEnabledStatus = (element, status) => {
-    element.className = status ? element.className.replace("dis", "enabled") : element.className.replace("enabled", "dis");
     let children = element.children;
     if (status) {
         for (let y = 0; y < children.length; y++) {
@@ -163,25 +163,54 @@ setEnabledStatus = (element, status) => {
             children[y].style.transform = "rotateY(180deg) scale(-1, 1)";
         }
     }
+    element.className = status ? element.className.replace("dis", "enabled") : element.className.replace("enabled", "dis");
+}
+
+const replaceByIndex = (str, new_char, index) => {
+    splited = str.split('');
+    splited[index] = new_char;
+    return splited.join('');
 }
 
 const verifyWords = (mainWord, testWord) => {
-    let colors = new Map();
-    let cloneWord = testWord;
+
+    const colorMap = new Map();
+    const mainChars = mainWord.split("");
     for (let i = 0; i < mainWord.length; i++) {
-        console.log(cloneWord)
-        if (mainWord[i] == testWord[i]) {
-            colors.set(i, '#00FF00');
-            continue;
-        }
-        colors.set(i, "#aaaa00")
+        colorMap.set(i, "#3016c4");
     }
-    return colors;
+    // Checa as letras que estão na posição correta
+    for (let i = 0; i < mainChars.length; i++) {
+        if (mainChars[i] === testWord[i]) {
+            colorMap.set(i, "green");
+            mainChars[i] = null;
+        }
+    }
+
+    // Checa as letras que estão corretas, mas na posição errada
+    for (let i = 0; i < mainChars.length; i++) {
+        const testChar = testWord[i];
+        if (testChar !== null && mainChars.includes(testChar)) {
+            colorMap.set(i, "yellow");
+            const index = mainChars.indexOf(testChar);
+            mainChars[index] = null;
+        }
+    }
+
+    // Retorna o Map com as cores correspondentes
+    return colorMap;
+}
+
+const count = (word, char) => {
+    let count = 0;
+    for (letter of word) {
+        if (char == letter) count++;
+    }
+    return count;
 }
 
 const main = async() => {
     generateBoard();
-    await wordExists("adss");
     let words = [];
     while (words.length == 0) {
         words = (await getNearWords((await getRandomWord()).word.slice(0, 5))).filter((val) => { return val.length == 5 });

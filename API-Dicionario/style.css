@@ -17,7 +17,7 @@ body {
     font-weight: bold;
 }
 
-#termo .row-div {
+.termo .row-div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -31,16 +31,16 @@ body {
     margin: 2px;
 }
 
-.enabled .cell-div {
+.r1 .cell-div {
     background-color: #3016c4;
 }
 
-.dis .cell-div {
+.r0 .cell-div {
     background-color: #0e005a;
 }
 
-.enabled .active {
-    border-bottom: solid #000000 5px;
+.r1 .c1 {
+    border-bottom: solid #000000 6px;
 }
 
 .row-div .cell-div {
