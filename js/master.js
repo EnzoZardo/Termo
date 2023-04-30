@@ -382,7 +382,7 @@ const main = async() => {
     WORD.Seed = seed.toLocaleUpperCase();
     WORD.Data = (await getWordData(words[0]))[0];
     WORD.Word = words[0].normalize('NFD').replace(/\p{Mn}/gu, "").toLocaleUpperCase();
-    document.getElementsByTagName('h1')[0].innerHTML += " " + WORD.Word.toLocaleUpperCase();
+    // document.getElementsByTagName('h1')[0].innerHTML += " " + WORD.Word.toLocaleUpperCase();
 }
 
 
