@@ -23,6 +23,12 @@ const CLASSNAMES = {
     FinalModal: "final-modal"
 };
 
+const MODE = {
+    Win: false,
+    Lose: false,
+    Playing: true
+};
+
 /*
  Direções para a função de mover linhas e colunas
 */
@@ -44,17 +50,22 @@ const WARNING = {
     WarningElement: document.querySelector(`.${CLASSNAMES.Warning}`),
     Alert: function(text) {
         this.WarningElement.innerText = text;
+        this.WarningElement.style.transition = "all 2s";
         this.WarningElement.style.opacity = "1";
-        let timer = setInterval(() => {
-            WARNING.WarningElement.style.opacity = "0"
-            clearInterval(timer);
-        }, 4000);
+        setTimer(() => {
+            this.WarningElement.style.opacity = "0";
+        }, 2000);
     }
 };
 
 const MODAL = {
     ModalElement: document.querySelector(`.${CLASSNAMES.FinalModal}`),
-    ShowModal: function(seed, word, meaning) {
+    ShowModal: function(title, seed, word, meaning) {
+        setTimer(() => {
+            MODAL.ModalElement.style.transition = "all 2s";
+            MODAL.ModalElement.style.opacity = "1";
+        }, 2000);
+        this.ModalElement.querySelector('.message').innerHTML += title;
         this.ModalElement.querySelector('.seed').innerHTML += seed;
         this.ModalElement.querySelector('.word').innerHTML += word;
         this.ModalElement.querySelector('.meaning').innerHTML += meaning;
@@ -104,6 +115,13 @@ const wordExists = async(word) => {
     return ((await getWordData(word)).length != 0);
 }
 
+const setTimer = (func, milliseconds, ...params) => {
+    let timer = setInterval(() => {
+        func(...params);
+        clearInterval(timer);
+    }, milliseconds);
+}
+
 const generateBoard = (width, height) => {
     let tableDiv = document.querySelector(`.${CLASSNAMES.Root}`);
     for (let y = 0; y < height; y++) {
@@ -150,7 +168,9 @@ const moveActiveInList = (side, who, included, setStatus, canBack) => {
                 if (canBack) {
                     setStatus(cells.item(side > 0 ? 0 : cells.length - 1), true);
                 } else {
-                    setStatus(cells.item(i), true);
+                    setTimer(() => {
+                        lose();
+                    }, 2000);
                 }
             }
             break;
@@ -188,15 +208,15 @@ document.addEventListener('keyup', async(event) => {
             moveActiveInList(DIRECTIONS.Backward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
             break;
         case (KEYS.Backspace):
-            moveActiveInList(DIRECTIONS.Backward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
             let c1 = document.querySelector(`.${CLASSNAMES.EnabledRow} .${CLASSNAMES.EnabledCell}`);
             c1.innerHTML = "";
             c1.className = c1.className.replace(CLASSNAMES.FullCell, CLASSNAMES.EmptyCell);
+            moveActiveInList(DIRECTIONS.Backward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
             break;
         case (KEYS.Enter):
             if (isAllFull()) {
                 let exists = await wordExists(getEnabledWord().toLocaleLowerCase());
-                if (exists) {
+                if (exists || getEnabledWord() == WORD.Word) {
                     moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.Root}`, CLASSNAMES.EnabledRow, setRowStatus, false);
                 } else {
                     WARNING.Alert("Palavra não encontrada");
@@ -252,26 +272,30 @@ const setCellStatus = (element, status) => {
 */
 setRowStatus = (element, status) => {
     let children = element.children;
-    if (status) {
+    // let win = (getEnabledWord() == WORD.Word);
+    // console.log(win);
+    if (status && !MODE.Lose && !MODE.Win) {
         for (let y = 0; y < children.length; y++) {
-            if (y == 0) {
+            if (y == 0 && !MODE.Win) {
                 setCellStatus(children[y], true);
             }
             children[y].style.backgroundColor = COLORS.Blue;
+
         }
-    } else {
-        //Adicionar aqui verificação final e o ShowModal
-        console.log(WORD.Word, getEnabledWord())
+    } else if (MODE.Playing) {
+        if (WORD.Word == getEnabledWord()) {
+            win();
+        }
         let colors = verifyWords(WORD.Word, getEnabledWord());
         for (let y = 0; y < children.length; y++) {
             setCellStatus(children[y], false);
-            let estilo = children[y].style;
-            estilo.transition = `all ${1}s ${0.1 * (y + 1)}s`;
-            estilo.backgroundColor = colors.get(y);
-            estilo.transform = "rotateY(180deg) scale(-1, 1)";
+            let style = children[y].style;
+            style.transition = `all ${1}s ${0.1 * (y + 1)}s`;
+            style.backgroundColor = colors.get(y);
+            style.transform = "rotateY(180deg) scale(-1, 1)";
         }
     }
-    element.className = status ? element.className.replace(CLASSNAMES.DisabledRow, CLASSNAMES.EnabledRow) : element.className.replace(CLASSNAMES.EnabledRow, CLASSNAMES.DisabledRow);
+    element.className = status && !MODE.Win && !MODE.Lose ? element.className.replace(CLASSNAMES.DisabledRow, CLASSNAMES.EnabledRow) : element.className.replace(CLASSNAMES.EnabledRow, CLASSNAMES.DisabledRow);
 }
 
 /*
@@ -292,28 +316,37 @@ const replaceByIndex = (str, new_char, index) => {
 const verifyWords = (mainWord, testWord) => {
     const colorMap = new Map();
     const mainChars = mainWord.split("");
+    let cloneWord = testWord;
+    // Define a cor azul para todas as letras
     for (let i = 0; i < mainWord.length; i++) {
         colorMap.set(i, COLORS.Blue);
     }
-    // Checa as letras que estão na posição correta
+
+    // Checa as letras que estão na posição correta e as marca de verde
     for (let i = 0; i < mainChars.length; i++) {
-        if (mainChars[i] === testWord[i]) {
+        if (mainChars[i] === cloneWord[i]) {
             colorMap.set(i, COLORS.Green);
             mainChars[i] = null;
+            testWord = replaceByIndex(testWord, "_", i);
         }
     }
-    // Checa as letras que estão corretas, mas na posição errada
+
+    // Checa as letras que estão corretas, mas na posição errada, e as marca de amarelo
     for (let i = 0; i < mainChars.length; i++) {
         const testChar = testWord[i];
-        if (testChar !== null && mainChars.includes(testChar)) {
-            colorMap.set(i, COLORS.Yellow);
+        console.log(cloneWord)
+        if (testChar !== null && mainChars.includes(testChar) && testChar !== "_") {
             const index = mainChars.indexOf(testChar);
+            console.log(`Index: ${index}\nMain: ${mainChars}\nChar: ${testChar}`)
             mainChars[index] = null;
+            colorMap.set(i, COLORS.Yellow);
         }
     }
+
     // Retorna o Map com as cores correspondentes
     return colorMap;
 }
+
 
 /*
  Conta quantas vezes um char aparece
@@ -327,16 +360,28 @@ const count = (word, char) => {
     return count;
 }
 
+const win = () => {
+    MODE.Playing = false;
+    MODE.Win = true;
+    MODAL.ShowModal("Hey champs, você venceu!!", WORD.Seed, WORD.Word, WORD.Data.xml);
+}
+
+const lose = () => {
+    MODE.Playing = false;
+    MODE.Lose = true;
+    MODAL.ShowModal("Perdeu, mocorongo!!", WORD.Seed, WORD.Word, WORD.Data.xml);
+}
+
 const main = async() => {
     generateBoard(5, 6);
     let words = [];
     while (words.length == 0) {
-        seed = await getRandomWord();
-        words = (await getNearWords((seed).word.slice(0, 5))).filter((val) => { return val.length == 5 });
+        seed = (await getRandomWord()).word;
+        words = (await getNearWords((seed).slice(0, 5))).filter((val) => { return val.length == 5 }); //&& count(val, 'a') == 2 
     }
-    WORD.Seed = seed;
+    WORD.Seed = seed.toLocaleUpperCase();
+    WORD.Data = (await getWordData(words[0]))[0];
     WORD.Word = words[0].normalize('NFD').replace(/\p{Mn}/gu, "").toLocaleUpperCase();
-    WORD.Data = await getWordData(WORD.Word);
     document.getElementsByTagName('h1')[0].innerHTML += " " + WORD.Word.toLocaleUpperCase();
 }
 

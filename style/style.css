@@ -12,20 +12,34 @@ body {
 }
 
 .title,
-.warning {
+.warning,
+.reload button {
     color: whitesmoke;
+}
+
+.message,
+.title,
+.warning,
+.reload button {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: bold;
 }
 
+.message {
+    color: black;
+    font-size: 1.5rem;
+}
+
 .termo .row-div,
 .warning,
-.final-modal {
+.final-modal,
+.reload {
     display: flex;
 }
 
 .termo .row-div,
-.warning {
+.warning,
+.reload {
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -33,10 +47,10 @@ body {
 
 .warning {
     position: absolute;
-    top: calc(23% - 1.5rem);
+    top: calc(27% - 1.5rem);
     left: calc(50% - 7rem);
     opacity: 0;
-    transition: all 3s;
+    /* transition: all 3s; */
     width: 14rem;
     height: 3rem;
     text-align: center;
@@ -46,7 +60,7 @@ body {
 
 .final-modal {
     flex-direction: column;
-    justify-content: baseline;
+    justify-content: space-around;
     position: absolute;
     width: 25rem;
     height: 25rem;
@@ -55,10 +69,31 @@ body {
     background-color: whitesmoke;
     border-radius: 10px;
     box-shadow: 10px 10px 50px black;
+    opacity: 0;
 }
 
 .final-modal div {
     margin: 1.5rem;
+}
+
+.final-modal .meaning {
+    overflow-y: scroll;
+}
+
+.final-modal .reload button {
+    background-color: #3016c4;
+    border-radius: 10px;
+    width: 7rem;
+    height: 2.3rem;
+    border: none;
+    box-shadow: 5px 5px 20px black;
+    transition: all 0.5s;
+}
+
+.final-modal .reload button:hover {
+    background-color: #2e1e8b;
+    transform: translate(-0.2rem, -0.2rem);
+    box-shadow: 10px 10px 25px black;
 }
 
 .final-modal div span {
