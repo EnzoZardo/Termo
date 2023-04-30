@@ -63,8 +63,8 @@ body {
     justify-content: space-around;
     position: absolute;
     width: 25rem;
-    height: 25rem;
-    top: calc(50% - 12.5rem);
+    height: 30rem;
+    top: calc(50% - 15rem);
     left: calc(50% - 12.5rem);
     background-color: whitesmoke;
     border-radius: 10px;
@@ -73,7 +73,7 @@ body {
 }
 
 .final-modal div {
-    margin: 1.5rem;
+    margin: auto 1.5rem;
 }
 
 .final-modal .meaning {
