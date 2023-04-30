@@ -273,7 +273,6 @@ const setCellStatus = (element, status) => {
 setRowStatus = (element, status) => {
     let children = element.children;
     // let win = (getEnabledWord() == WORD.Word);
-    // console.log(win);
     if (status && !MODE.Lose && !MODE.Win) {
         for (let y = 0; y < children.length; y++) {
             if (y == 0 && !MODE.Win) {
@@ -334,10 +333,8 @@ const verifyWords = (mainWord, testWord) => {
     // Checa as letras que estão corretas, mas na posição errada, e as marca de amarelo
     for (let i = 0; i < mainChars.length; i++) {
         const testChar = testWord[i];
-        console.log(cloneWord)
         if (testChar !== null && mainChars.includes(testChar) && testChar !== "_") {
             const index = mainChars.indexOf(testChar);
-            console.log(`Index: ${index}\nMain: ${mainChars}\nChar: ${testChar}`)
             mainChars[index] = null;
             colorMap.set(i, COLORS.Yellow);
         }
