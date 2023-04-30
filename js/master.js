@@ -61,6 +61,7 @@ const WARNING = {
 const MODAL = {
     ModalElement: document.querySelector(`.${CLASSNAMES.FinalModal}`),
     ShowModal: function(title, seed, word, meaning) {
+        this.ModalElement.style.display = "flex";
         setTimer(() => {
             MODAL.ModalElement.style.transition = "all 2s";
             MODAL.ModalElement.style.opacity = "1";
@@ -81,6 +82,46 @@ const COLORS = {
     Blue: "#3016c4",
     NeutralBlue: "#0e005a"
 }
+
+
+const backspace = () => {
+    let c1 = document.querySelector(`.${CLASSNAMES.EnabledRow} .${CLASSNAMES.EnabledCell}`);
+    c1.innerHTML = "";
+    c1.className = c1.className.replace(CLASSNAMES.FullCell, CLASSNAMES.EmptyCell);
+    moveActiveInList(DIRECTIONS.Backward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
+}
+
+const enter = async() => {
+    if (isAllFull()) {
+        let exists = await wordExists(getEnabledWord().toLocaleLowerCase());
+        if (exists || getEnabledWord() == WORD.Word) {
+            moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.Root}`, CLASSNAMES.EnabledRow, setRowStatus, false);
+        } else {
+            WARNING.Alert("Palavra não encontrada");
+        }
+    } else {
+        WARNING.Alert("Ainda existem letras por preencher");
+    }
+}
+
+const type = (letter) => {
+    let c1CellDiv = document.querySelector(`.${CLASSNAMES.EnabledRow} .${CLASSNAMES.EnabledCell}`);
+    c1CellDiv.innerHTML = letter.toLocaleUpperCase();
+    c1CellDiv.className = c1CellDiv.className.replace(CLASSNAMES.EmptyCell, CLASSNAMES.FullCell);
+    moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
+}
+
+document.querySelector(".backspace").onclick = () => {
+    backspace();
+}
+
+document.querySelector(".enter").onclick = () => {
+    enter();
+}
+
+document.querySelectorAll(".letter").forEach((el) => {
+    el.onclick = () => type(el.innerHTML);
+})
 
 /*
  Função de requisição genérica
@@ -208,23 +249,10 @@ document.addEventListener('keyup', async(event) => {
             moveActiveInList(DIRECTIONS.Backward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
             break;
         case (KEYS.Backspace):
-            let c1 = document.querySelector(`.${CLASSNAMES.EnabledRow} .${CLASSNAMES.EnabledCell}`);
-            c1.innerHTML = "";
-            c1.className = c1.className.replace(CLASSNAMES.FullCell, CLASSNAMES.EmptyCell);
-            moveActiveInList(DIRECTIONS.Backward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
+            backspace();
             break;
         case (KEYS.Enter):
-            if (isAllFull()) {
-                let exists = await wordExists(getEnabledWord().toLocaleLowerCase());
-                if (exists || getEnabledWord() == WORD.Word) {
-                    moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.Root}`, CLASSNAMES.EnabledRow, setRowStatus, false);
-                } else {
-                    WARNING.Alert("Palavra não encontrada");
-                    // WARNING.CloseAlert();
-                }
-            } else {
-                WARNING.Alert("Ainda existem letras por preencher");
-            }
+            enter();
             break;
         default:
             break;
@@ -236,11 +264,8 @@ document.addEventListener('keyup', async(event) => {
 */
 document.addEventListener('keypress', (event) => {
     let alphabet = "abcdefghijklmnopqrstuvwxyzç";
-    let c1CellDiv = document.querySelector(`.${CLASSNAMES.EnabledRow} .${CLASSNAMES.EnabledCell}`);
     if (alphabet.includes(event.key) || alphabet.toLocaleUpperCase().includes(event.key)) {
-        c1CellDiv.innerHTML = event.key.toLocaleUpperCase();
-        c1CellDiv.className = c1CellDiv.className.replace(CLASSNAMES.EmptyCell, CLASSNAMES.FullCell);
-        moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
+        type(event.key);
     }
 });
 
