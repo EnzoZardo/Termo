@@ -111,7 +111,7 @@ const type = (letter) => {
     moveActiveInList(DIRECTIONS.Forward, `.${CLASSNAMES.EnabledRow}`, CLASSNAMES.EnabledCell, setCellStatus, true);
 }
 
-document.querySelector(".backspace").onclick = () => {
+/*document.querySelector(".backspace").onclick = () => {
     backspace();
 }
 
@@ -121,7 +121,7 @@ document.querySelector(".enter").onclick = () => {
 
 document.querySelectorAll(".letter").forEach((el) => {
     el.onclick = () => type(el.innerHTML);
-})
+})*/
 
 /*
  Função de requisição genérica
