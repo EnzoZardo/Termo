@@ -50,6 +50,7 @@ const WARNING = {
     WarningElement: document.querySelector(`.${CLASSNAMES.Warning}`),
     Alert: function(text) {
         this.WarningElement.innerText = text;
+        this.WarningElement.style.display = "flex";
         this.WarningElement.style.transition = "all 2s";
         this.WarningElement.style.opacity = "1";
         setTimer(() => {
