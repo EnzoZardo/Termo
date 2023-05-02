@@ -212,7 +212,7 @@ const moveActiveInList = (side, who, included, setStatus, canBack) => {
                     setStatus(cells.item(side > 0 ? 0 : cells.length - 1), true);
                 } else {
                     setTimer(() => {
-                        lose();
+                        if (!MODE.Win) lose();
                     }, 2000);
                 }
             }
