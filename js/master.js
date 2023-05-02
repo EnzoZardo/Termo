@@ -55,6 +55,7 @@ const WARNING = {
         this.WarningElement.style.opacity = "1";
         setTimer(() => {
             this.WarningElement.style.opacity = "0";
+            this.WarningElement.style.display = "none";
         }, 2000);
     }
 };
